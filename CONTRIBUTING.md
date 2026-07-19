@@ -37,6 +37,8 @@ Repository uses `pre-commit` for `ruff` and `ty` checks.
 ## Pull requests
 
 Every PR fires code quality checks and execution of the tests from `tests/` folder.
+Before opening or updating a PR, retrieve the current repository labels from
+GitHub and apply the most appropriate label for categorization.
 
 ## Releases
 
