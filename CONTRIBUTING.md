@@ -25,7 +25,7 @@ Keep commit summary concise. You may include a more detailed body.
 Small changes can go directly to `main`. When a branch is useful, name it:
 
 ```text
-<type>/-<summary>
+<type>-<summary>
 ```
 
 Examples: `feat-apartment-noise-data`, `chore-bump-deps`.
@@ -49,4 +49,5 @@ just release patch  # or minor / major
 
 The workflow uses `bump-my-version` and the latest stable Git tag to calculate the
 next version. After Ruff, ty, and pytest pass, it tags the current `main` commit and
-creates a GitHub Release with generated notes. It does not publish to PyPI (yet).
+creates a GitHub Release with generated notes. Stable tags use the `X.Y.Z` format.
+The workflow does not publish to PyPI (yet).
