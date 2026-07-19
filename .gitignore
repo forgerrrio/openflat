@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ty_cache/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+
+# Build output
+build/
+dist/
+
+# Local data and generated experiment output
+data/
+records/experiments/**/output/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store

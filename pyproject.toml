@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.27", "hatch-vcs>=0.5.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openflat"
+dynamic = ["version"]
+description = "Tools for apartment-listing decision support."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "bump-my-version>=1.4.1",
+    "pre-commit>=4.6.0",
+    "pytest>=9.1.1",
+    "ruff>=0.15.22",
+    "ty>=0.0.61",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/openflat"]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.bumpversion]
+current_version = "0.0.0"
+commit = false
+tag = false

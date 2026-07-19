@@ -1,0 +1,105 @@
+name: GitHub release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Stable version component to increment
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          version: "0.11.29"
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Run Ruff
+        run: |
+          uv run ruff format --check .
+          uv run ruff check .
+
+      - name: Run ty
+        run: uv run ty check
+
+      - name: Run pytest
+        run: uv run pytest || test $? -eq 5
+
+      - name: Calculate release version
+        id: version
+        env:
+          BUMP_PART: ${{ inputs.bump }}
+        run: |
+          uv run python - <<'PY'
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          from bumpversion.config import get_configuration
+
+          stable_tag = re.compile(r"^v(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$")
+          tags = subprocess.run(
+              ["git", "tag", "--list", "v*"],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout.splitlines()
+          versions = [
+              match.group("version")
+              for tag in tags
+              if (match := stable_tag.fullmatch(tag)) is not None
+          ]
+          current = max(versions, key=lambda value: tuple(map(int, value.split(".")))) if versions else "0.0.0"
+
+          config = get_configuration("pyproject.toml", current_version=current)
+          parsed = config.version_config.parse(current, raise_error=True)
+          if parsed is None:
+              raise SystemExit(f"Unable to parse current version: {current}")
+          release = config.version_config.serialize(parsed.bump(os.environ["BUMP_PART"]), {})
+          target_sha = subprocess.run(
+              ["git", "rev-parse", "HEAD"],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout.strip()
+
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
+              print(f"version={release}", file=output)
+              print(f"sha={target_sha}", file=output)
+          PY
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          TARGET_SHA: ${{ steps.version.outputs.sha }}
+        run: >-
+          gh release create "v${RELEASE_VERSION}"
+          --target "${TARGET_SHA}"
+          --title "v${RELEASE_VERSION}"
+          --generate-notes
