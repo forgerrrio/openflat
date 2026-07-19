@@ -1,5 +1,20 @@
 # Contributing
 
+## Issues
+
+The [openflat GitHub Project](https://github.com/orgs/forgerrrio/projects/1) is
+the authoritative task board.
+
+Issue types:
+
+- `Task`: A concrete, independently completable unit of work.
+- `Initiative`: A larger outcome composed of multiple tasks (as sub-issues).
+
+Ways of working:
+
+- Set `Area` using an appropriate value (or suggest a new one).
+- Workflow: `Backlog` → `Ready` → `In progress` → `In review` → `Done`. Use `Cancelled` for abandoned work and close the issue as not planned.
+
 ## Commits
 
 Use a type and component for every commit:

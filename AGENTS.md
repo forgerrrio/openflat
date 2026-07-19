@@ -7,7 +7,11 @@ housing decisions.
 
 - `uv`-managed python 3.13
 - `ruff` for linting and formatting, `ty` for typechecking, `pytest` for testing.
-- see `CONTRIBUTING.md` for commit/branch/pr guidance.
+
+## Contributing
+
+- This repo uses our org's `openflat` GitHub Project.
+- Consult `CONTRIBUTING.md` for guidance on task management, commits, branches, PRs.
 
 ## Repository map
 
