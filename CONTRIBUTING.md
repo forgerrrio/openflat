@@ -22,13 +22,13 @@ Keep commit summary concise. You may include a more detailed body.
 
 ## Branches
 
-Small changes can go directly to `main`. When a branch is useful, name it:
+Create a branch for every change and submit it through a pull request. Name it:
 
 ```text
-<type>-<summary>
+<type>/<summary>
 ```
 
-Examples: `feat-apartment-noise-data`, `chore-bump-deps`.
+Examples: `feat/apartment-noise-data`, `chore/bump-deps`.
 
 ## Code quality
 
