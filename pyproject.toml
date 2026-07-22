@@ -8,7 +8,15 @@ dynamic = ["version"]
 description = "Tools for apartment-listing decision support."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "beautifulsoup4>=4.14",
+    "httpx>=0.28",
+    "nicegui>=3.14,<4",
+    "pydantic>=2.13",
+]
+
+[project.scripts]
+openflat-gui = "openflat.gui.app:main"
 
 [dependency-groups]
 dev = [
@@ -32,6 +40,9 @@ local_scheme = "no-local-version"
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
+markers = [
+    "live: tests that access external provider websites",
+]
 
 [tool.bumpversion]
 current_version = "0.0.0"

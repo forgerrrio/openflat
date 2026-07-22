@@ -25,6 +25,10 @@ typecheck:
 test:
     @uv run pytest || test $? -eq 5
 
+# Run the local openflat graphical interface.
+gui:
+    uv run openflat-gui
+
 # Install the repository's Git pre-commit hook.
 hooks:
     uv run pre-commit install
