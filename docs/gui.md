@@ -21,6 +21,9 @@ The interface supports:
 - viewing compact listing summaries; and
 - deleting a quest after explicit confirmation.
 
+Quest creation asks only for a name and optional description. The filesystem slug
+is generated automatically, including normalization of common diacritics.
+
 By default, the application reads and writes the repository's `data/` directory.
 Set `OPENFLAT_DATA_DIRECTORY` to use another location, or `OPENFLAT_GUI_PORT` to
 change the listening port:

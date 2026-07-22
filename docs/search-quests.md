@@ -21,8 +21,7 @@ from openflat.search_quests import (
 )
 
 quest = create_search_quest(
-    "vinohrady-rentals",
-    title="Vinohrady rentals",
+    "Vinohrady rentals",
     description="Manually reviewed long-term rentals",
 )
 
@@ -30,8 +29,11 @@ same_quest = open_search_quest("vinohrady-rentals")
 all_quests = list_search_quests()
 ```
 
-Slugs are stable directory identifiers containing lowercase ASCII letters,
-numbers, and single hyphens. Titles and descriptions are user-facing metadata.
+The directory slug is generated from the title, so `Vinohrady rentals` becomes
+`vinohrady-rentals`. Diacritics are normalized, punctuation becomes a hyphen, and
+the result contains lowercase ASCII letters and numbers. Programmatic callers can
+pass an explicit `slug=` when a generated slug would be ambiguous. Slugs remain
+stable after creation; titles and descriptions are user-facing metadata.
 
 ## Update
 

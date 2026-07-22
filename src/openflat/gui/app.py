@@ -21,7 +21,6 @@ from openflat.search_quests import (
 )
 
 _APP_TITLE = "openflat"
-_SLUG_HELP = "Lowercase letters, numbers, and single hyphens"
 
 ui.add_css(
     """
@@ -70,9 +69,7 @@ def quest_index_page() -> None:
             create_dialog = ui.dialog()
             with create_dialog, ui.card().classes("w-[32rem] max-w-full"):
                 ui.label("Create search quest").classes("text-xl font-semibold")
-                slug_input = ui.input("Slug", placeholder="vinohrady-rentals").classes("w-full")
-                ui.label(_SLUG_HELP).classes("text-xs text-stone-500 -mt-3")
-                title_input = ui.input("Title", placeholder="Vinohrady rentals").classes("w-full")
+                title_input = ui.input("Name", placeholder="Vinohrady rentals").classes("w-full")
                 description_input = ui.textarea(
                     "Description", placeholder="What are you looking for?"
                 ).classes("w-full")
@@ -86,8 +83,7 @@ def quest_index_page() -> None:
                         quest = await run.io_bound(
                             partial(
                                 create_search_quest,
-                                (slug_input.value or "").strip(),
-                                title=(title_input.value or "").strip(),
+                                (title_input.value or "").strip(),
                                 description=(description_input.value or "").strip() or None,
                                 data_directory=data_directory,
                             )

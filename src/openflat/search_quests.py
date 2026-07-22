@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import tempfile
+import unicodedata
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal, Self
@@ -112,16 +113,17 @@ class SearchQuest(BaseModel):
 
 
 def create_search_quest(
-    slug: str,
-    *,
     title: str,
+    *,
     description: str | None = None,
+    slug: str | None = None,
     data_directory: str | Path = "data",
 ) -> SearchQuest:
     """Create and return a new filesystem-backed search quest."""
+    resolved_slug = slug if slug is not None else slugify_search_quest_title(title)
     try:
         manifest = SearchQuestManifest(
-            slug=slug,
+            slug=resolved_slug,
             title=title,
             description=description,
         )
@@ -144,6 +146,19 @@ def create_search_quest(
         raise SearchQuestError(f"could not create search quest: {directory}") from error
 
     return SearchQuest.from_manifest(root, manifest)
+
+
+def slugify_search_quest_title(title: str) -> str:
+    """Generate a stable ASCII directory slug from a human-facing title."""
+    normalized = unicodedata.normalize("NFKD", title)
+    ascii_title = normalized.encode("ascii", errors="ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", ascii_title.lower()).strip("-")
+    slug = slug[:100].rstrip("-")
+    if not slug:
+        raise InvalidSearchQuestError(
+            "search quest title must contain at least one ASCII letter or number"
+        )
+    return slug
 
 
 def open_search_quest(
@@ -286,5 +301,6 @@ __all__ = [
     "delete_search_quest",
     "list_search_quests",
     "open_search_quest",
+    "slugify_search_quest_title",
     "update_search_quest",
 ]

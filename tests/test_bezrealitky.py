@@ -136,8 +136,7 @@ def test_fetches_and_saves_listing_under_search_quest(tmp_path: Path) -> None:
         )
 
     quest = create_search_quest(
-        "vinohrady-rentals",
-        title="Vinohrady rentals",
+        "Vinohrady rentals",
         data_directory=tmp_path,
     )
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
@@ -155,7 +154,7 @@ def test_fetches_and_saves_listing_under_search_quest(tmp_path: Path) -> None:
 
 
 def test_does_not_overwrite_raw_listing_by_default(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
     destination = quest.raw_path("bezrealitky", "432912")
     destination.write_text("original", encoding="utf-8")
 
@@ -174,7 +173,7 @@ def test_does_not_overwrite_raw_listing_by_default(tmp_path: Path) -> None:
 
 
 def test_rejects_listing_without_numeric_id(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
@@ -193,7 +192,7 @@ def test_rejects_listing_without_numeric_id(tmp_path: Path) -> None:
 
 
 def test_does_not_save_through_stale_search_quest_handle(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
     delete_search_quest(quest)
 
     with pytest.raises(SearchQuestNotFoundError):

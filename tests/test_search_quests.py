@@ -13,14 +13,14 @@ from openflat.search_quests import (
     delete_search_quest,
     list_search_quests,
     open_search_quest,
+    slugify_search_quest_title,
     update_search_quest,
 )
 
 
 def test_creates_and_opens_search_quest(tmp_path: Path) -> None:
     quest = create_search_quest(
-        "vinohrady-rentals",
-        title="Vinohrady rentals",
+        "Vinohrady rentals",
         description="Long-term rentals",
         data_directory=tmp_path,
     )
@@ -42,14 +42,31 @@ def test_creates_and_opens_search_quest(tmp_path: Path) -> None:
 )
 def test_rejects_invalid_slugs(slug: str, tmp_path: Path) -> None:
     with pytest.raises(InvalidSearchQuestError):
-        create_search_quest(slug, title="A quest", data_directory=tmp_path)
+        create_search_quest("A quest", slug=slug, data_directory=tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("title", "slug"),
+    [
+        ("Vinohrady rentals", "vinohrady-rentals"),
+        ("Pronájem: Vinohrady + Žižkov", "pronajem-vinohrady-zizkov"),
+        ("2+kk under 30 000 Kč", "2-kk-under-30-000-kc"),
+    ],
+)
+def test_generates_slug_from_title(title: str, slug: str) -> None:
+    assert slugify_search_quest_title(title) == slug
+
+
+def test_rejects_title_that_cannot_generate_slug(tmp_path: Path) -> None:
+    with pytest.raises(InvalidSearchQuestError, match="ASCII"):
+        create_search_quest("東京", data_directory=tmp_path)
 
 
 def test_rejects_duplicate_search_quest(tmp_path: Path) -> None:
-    create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    create_search_quest("Quest", data_directory=tmp_path)
 
     with pytest.raises(SearchQuestAlreadyExistsError):
-        create_search_quest("quest", title="Quest", data_directory=tmp_path)
+        create_search_quest("Quest", data_directory=tmp_path)
 
 
 def test_opens_only_complete_valid_search_quests(tmp_path: Path) -> None:
@@ -64,8 +81,8 @@ def test_opens_only_complete_valid_search_quests(tmp_path: Path) -> None:
 
 
 def test_lists_search_quests_in_slug_order(tmp_path: Path) -> None:
-    second = create_search_quest("zizkov", title="Žižkov", data_directory=tmp_path)
-    first = create_search_quest("vinohrady", title="Vinohrady", data_directory=tmp_path)
+    second = create_search_quest("Žižkov", data_directory=tmp_path)
+    first = create_search_quest("Vinohrady", data_directory=tmp_path)
     (tmp_path / "not-a-quest").mkdir()
 
     assert list_search_quests(data_directory=tmp_path) == [first, second]
@@ -73,8 +90,8 @@ def test_lists_search_quests_in_slug_order(tmp_path: Path) -> None:
 
 def test_updates_search_quest_metadata(tmp_path: Path) -> None:
     quest = create_search_quest(
-        "quest",
-        title="Original",
+        "Original",
+        slug="quest",
         description="Temporary",
         data_directory=tmp_path,
     )
@@ -92,14 +109,14 @@ def test_updates_search_quest_metadata(tmp_path: Path) -> None:
 
 
 def test_rejects_invalid_search_quest_update(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Original", data_directory=tmp_path)
+    quest = create_search_quest("Original", slug="quest", data_directory=tmp_path)
 
     with pytest.raises(InvalidSearchQuestError):
         update_search_quest(quest, SearchQuestUpdate(title=""))
 
 
 def test_deletes_empty_search_quest(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
 
     delete_search_quest(quest)
 
@@ -107,7 +124,7 @@ def test_deletes_empty_search_quest(tmp_path: Path) -> None:
 
 
 def test_requires_force_to_delete_search_quest_data(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
     quest.raw_path("bezrealitky", "432912").write_text("{}", encoding="utf-8")
 
     with pytest.raises(SearchQuestNotEmptyError, match="force=True"):
@@ -123,7 +140,7 @@ def test_requires_force_to_delete_search_quest_data(tmp_path: Path) -> None:
     [("../other", "1"), ("bezrealitky", "../1"), ("Bezrealitky", "1")],
 )
 def test_rejects_unsafe_raw_paths(provider: str, record_id: str, tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
 
     with pytest.raises(InvalidSearchQuestError):
         quest.raw_path(provider, record_id)

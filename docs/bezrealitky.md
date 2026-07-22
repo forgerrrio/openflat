@@ -44,8 +44,7 @@ from openflat.bezrealitky import save_listing_page_json
 from openflat.search_quests import create_search_quest
 
 quest = create_search_quest(
-    "vinohrady-rentals",
-    title="Vinohrady rentals",
+    "Vinohrady rentals",
 )
 destination = save_listing_page_json(
     "https://www.bezrealitky.cz/nemovitosti-byty-domy/"

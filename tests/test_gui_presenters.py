@@ -32,7 +32,7 @@ def write_listing(
 
 
 def test_loads_listing_summaries_for_gui(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
     write_listing(
         quest.raw_directory,
         "923060",
@@ -62,7 +62,7 @@ def test_loads_listing_summaries_for_gui(tmp_path: Path) -> None:
 
 
 def test_reports_malformed_raw_listing_without_hiding_valid_ones(tmp_path: Path) -> None:
-    quest = create_search_quest("quest", title="Quest", data_directory=tmp_path)
+    quest = create_search_quest("Quest", data_directory=tmp_path)
     write_listing(
         quest.raw_directory,
         "923060",
